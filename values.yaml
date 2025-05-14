@@ -2,8 +2,8 @@
 # See the "https://github.com/lancachenet/docker-compose/blob/master/.env" section for more details
 envFile:
   USE_GENERIC_CACHE: true          # Set true for LoadBalancer / monolithic setup
-  LANCACHE_IP: 192.168.0.181       # IP(s) DNS will resolve for cache (space-separated if multiple)
-  DNS_BIND_IP: 192.168.0.181       # IP DNS server binds to
+  LANCACHE_IP:                     # IP(s) DNS will resolve for cache (space-separated if multiple) This should be the same as the IP of the lancache service
+  DNS_BIND_IP:                     # IP DNS server binds to. This should be the same as the IP of the lancache service
   UPSTREAM_DNS: 8.8.8.8            # Upstream resolver for unknown DNS queries
   CACHE_ROOT: /data/cache          # Path for storing cached data
   CACHE_DISK_SIZE: 2000g           # Max size of cache on disk
@@ -19,7 +19,7 @@ dns:
   tcpPort: 53                             # TCP port to expose (DNS)
   service:
     type: LoadBalancer                   # Service type for external access
-    loadBalancerIP: "192.168.0.181"      # Static LoadBalancer IP
+    loadBalancerIP:                      # Static LoadBalancer IP
 
 # Monolithic cache configuration
 monolithic:
