@@ -1,0 +1,32 @@
+1. Configure Your Network DNS
+
+{{- if .Values.dns.service.loadBalancerIP }}
+You have specified a LoadBalancer IP for your DNS service.
+
+To use this DNS server, configure your router or PC's primary DNS to:
+
+    {{ .Values.dns.service.loadBalancerIP }}
+
+This will direct all DNS queries to your deployed service.
+
+{{- else }}
+You have not set a LoadBalancer IP for the DNS service.
+
+To retrieve the IP assigned by your provider, run:
+
+    kubectl get svc {{ .Release.Name }} -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
+
+Once you have the external IP, configure it as the primary DNS server on your router or PC.
+
+Note: It may take a few minutes for the LoadBalancer IP to become available.
+{{- end }}
+
+2. Verify DNS Resolution
+
+After setting the DNS, you can test it by running:
+
+    nslookup steam.cache.lancache.net
+
+This should return the IP address of your DNS server is functioning correctly.
+
+Thank you for installing {{ .Chart.Name }}!

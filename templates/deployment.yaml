@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lancache
+  labels:
+    app: lancache
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lancache
+  template:
+    metadata:
+      labels:
+        app: lancache
+    spec:
+      containers:
+        - name: lancache-dns
+          image: {{ .Values.dns.image }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.dns.udpPort | default 53 }}
+              name: dns-udp
+              protocol: UDP
+            - containerPort: {{ .Values.dns.tcpPort | default 53 }}
+              name: dns-tcp
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: lancache-env
+
+        - name: lancache-monolithic
+          image: {{ .Values.monolithic.image }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.monolithic.httpPort | default 80 }}
+              name: http
+            - containerPort: {{ .Values.monolithic.httpsPort | default 443 }}
+              name: https
+          envFrom:
+            - configMapRef:
+                name: lancache-env
+          volumeMounts:
+            - name: cache-volume
+              mountPath: {{ .Values.monolithic.persistence.cachePath }}
+            - name: logs-volume
+              mountPath: {{ .Values.monolithic.persistence.logsPath }}
+
+      volumes:
+        - name: cache-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.monolithic.persistence.cacheVolume }}
+        - name: logs-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.monolithic.persistence.logsVolume }}

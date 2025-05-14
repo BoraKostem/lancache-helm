@@ -1,0 +1,31 @@
+{{- if .Values.monolithic.persistence.enabled }}
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.monolithic.persistence.cacheVolume }}
+  labels:
+    app: lancache-monolithic
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.monolithic.persistence.cacheSize }}
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.monolithic.persistence.logsVolume }}
+  labels:
+    app: lancache-monolithic
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.monolithic.persistence.logsSize }} 
+
+{{- end }}

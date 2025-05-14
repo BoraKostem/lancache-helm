@@ -1,0 +1,36 @@
+# Environment variables for lancache components
+# See the "https://github.com/lancachenet/docker-compose/blob/master/.env" section for more details
+envFile:
+  USE_GENERIC_CACHE: true          # Set true for LoadBalancer / monolithic setup
+  LANCACHE_IP: 192.168.0.181       # IP(s) DNS will resolve for cache (space-separated if multiple)
+  DNS_BIND_IP: 192.168.0.181       # IP DNS server binds to
+  UPSTREAM_DNS: 8.8.8.8            # Upstream resolver for unknown DNS queries
+  CACHE_ROOT: /data/cache          # Path for storing cached data
+  CACHE_DISK_SIZE: 2000g           # Max size of cache on disk
+  MIN_FREE_DISK: 10g               # Minimum free disk space to maintain
+  CACHE_INDEX_SIZE: 500m           # Nginx index memory size (based on cache size)
+  CACHE_MAX_AGE: 3650d             # Max age to keep cached content
+  TZ: Europe/Istanbul              # Container timezone (e.g. Europe/Istanbul)
+
+# DNS service configuration
+dns:
+  image: lancachenet/lancache-dns:latest  # DNS server image
+  udpPort: 53                             # UDP port to expose (DNS)
+  tcpPort: 53                             # TCP port to expose (DNS)
+  service:
+    type: LoadBalancer                   # Service type for external access
+    loadBalancerIP: "192.168.0.181"      # Static LoadBalancer IP
+
+# Monolithic cache configuration
+monolithic:
+  image: lancachenet/monolithic:latest  # Monolithic cache image
+  httpPort: 80                          # HTTP port for cache
+  httpsPort: 443                        # HTTPS port for cache
+  persistence:
+    enabled: true                       # Enable persistent volumes
+    cacheVolume: lancache-cache         # Cache volume name
+    cacheSize: 2000Gi                   # Size of cache volume
+    cachePath: /data/cache              # Mount path for cache
+    logsVolume: lancache-logs           # Logs volume name
+    logsSize: 10Gi                      # Size of logs volume
+    logsPath: /data/logs                # Mount path for logs

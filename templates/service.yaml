@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: lancache
+  labels:
+    app: lancache
+spec:
+  selector:
+    app: lancache
+  ports:
+    - name: dns-udp
+      port: {{ .Values.dns.udpPort | default 53 }}
+      targetPort: {{ .Values.dns.udpPort | default 53 }}
+      protocol: UDP
+    - name: dns-tcp
+      port: {{ .Values.dns.tcpPort | default 53 }}
+      targetPort: {{ .Values.dns.tcpPort | default 53 }}
+      protocol: TCP
+    - name: http
+      port: {{ .Values.monolithic.httpPort | default 80 }}
+      targetPort: {{ .Values.monolithic.httpPort | default 80 }}
+      protocol: TCP
+    - name: https
+      port: {{ .Values.monolithic.httpsPort | default 443 }}
+      targetPort: {{ .Values.monolithic.httpsPort | default 443 }}
+      protocol: TCP
+  type: {{ .Values.dns.service.type | default "LoadBalancer" }}
+  {{- if eq (.Values.dns.service.type | default "LoadBalancer") "LoadBalancer" }}
+  loadBalancerIP: {{ .Values.dns.service.loadBalancerIP | default "" }}
+  {{- end }}
